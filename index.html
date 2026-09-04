@@ -564,5 +564,26 @@ Input: agent.yaml y
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
   onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false}]});"></script>
+
+<script>
+(function(){
+  function clean(){ if (location.hash) history.replaceState(null, "", location.pathname + location.search); }
+  document.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest("a[href^=\"#\"]") : null;
+    if (!a) return;
+    var el = document.getElementById(a.getAttribute("href").slice(1));
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({behavior: "smooth", block: "start"});
+    clean();
+  });
+  window.addEventListener("load", function(){
+    if (!location.hash) return;
+    var el = document.getElementById(location.hash.slice(1));
+    if (el) el.scrollIntoView();
+    clean();
+  });
+})();
+</script>
 </body>
 </html>
