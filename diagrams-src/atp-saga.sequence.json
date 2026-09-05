@@ -1,0 +1,300 @@
+{
+ "schema_version": 1,
+ "diagram_type": "sequence",
+ "meta": {
+  "title": "ATP Hold-Commit Saga",
+  "output": "diagrams/atp-saga.html",
+  "viewBox": [
+   860,
+   830
+  ],
+  "animation": "trace",
+  "quality_profile": "showcase",
+  "views": [
+   {
+    "id": "shop-and-hold",
+    "label": "Shop and hold",
+    "focus": [
+     "traveller",
+     "agent",
+     "flights",
+     "hotels"
+    ],
+    "note": "Quotes and reversible holds precede any commitment."
+   },
+   {
+    "id": "consent-and-margin",
+    "label": "Consent and margin",
+    "focus": [
+     "traveller",
+     "agent",
+     "policy"
+    ],
+    "note": "A single-use consent token and a deterministic margin check gate the commit."
+   },
+   {
+    "id": "commit-and-audit",
+    "label": "Commit and audit",
+    "focus": [
+     "agent",
+     "payments",
+     "flights",
+     "hotels",
+     "audit"
+    ],
+    "note": "Capture is exactly-once; every transition appends to the hash chain."
+   }
+  ]
+ },
+ "participants": [
+  {
+   "id": "traveller",
+   "type": "external",
+   "label": "Traveller",
+   "sublabel": "consents, pays"
+  },
+  {
+   "id": "agent",
+   "type": "backend",
+   "label": "Coordinator",
+   "sublabel": "ATP saga owner"
+  },
+  {
+   "id": "policy",
+   "type": "security",
+   "label": "Policy Engine",
+   "sublabel": "margin, mandates"
+  },
+  {
+   "id": "flights",
+   "type": "cloud",
+   "label": "Flights",
+   "sublabel": "supplier adapter"
+  },
+  {
+   "id": "hotels",
+   "type": "cloud",
+   "label": "Hotels",
+   "sublabel": "supplier adapter"
+  },
+  {
+   "id": "payments",
+   "type": "database",
+   "label": "Payments",
+   "sublabel": "two rails"
+  },
+  {
+   "id": "audit",
+   "type": "messagebus",
+   "label": "Audit Chain",
+   "sublabel": "append-only"
+  }
+ ],
+ "segments": [
+  {
+   "from": 150,
+   "to": 305,
+   "label": "Shop"
+  },
+  {
+   "from": 325,
+   "to": 445,
+   "label": "Hold"
+  },
+  {
+   "from": 465,
+   "to": 590,
+   "label": "Consent + margin"
+  },
+  {
+   "from": 610,
+   "to": 760,
+   "label": "Commit"
+  }
+ ],
+ "messages": [
+  {
+   "id": "brief",
+   "from": "traveller",
+   "to": "agent",
+   "y": 185,
+   "label": "trip brief",
+   "variant": "default"
+  },
+  {
+   "id": "search-f",
+   "from": "agent",
+   "to": "flights",
+   "y": 228,
+   "label": "search",
+   "variant": "emphasis"
+  },
+  {
+   "id": "offers-f",
+   "from": "flights",
+   "to": "agent",
+   "y": 264,
+   "label": "offers",
+   "variant": "return"
+  },
+  {
+   "id": "hold-f",
+   "from": "agent",
+   "to": "flights",
+   "y": 348,
+   "label": "hold leg",
+   "variant": "emphasis"
+  },
+  {
+   "id": "held-f",
+   "from": "flights",
+   "to": "agent",
+   "y": 382,
+   "label": "held, expiry",
+   "variant": "return"
+  },
+  {
+   "id": "hold-h",
+   "from": "agent",
+   "to": "hotels",
+   "y": 418,
+   "label": "hold room",
+   "variant": "emphasis"
+  },
+  {
+   "id": "consent",
+   "from": "traveller",
+   "to": "agent",
+   "y": 492,
+   "label": "consent token, single use",
+   "variant": "security"
+  },
+  {
+   "id": "margin",
+   "from": "agent",
+   "to": "policy",
+   "y": 532,
+   "label": "margin + mandate check",
+   "variant": "security"
+  },
+  {
+   "id": "allow",
+   "from": "policy",
+   "to": "agent",
+   "y": 566,
+   "label": "ALLOW",
+   "variant": "return"
+  },
+  {
+   "id": "capture",
+   "from": "agent",
+   "to": "payments",
+   "y": 636,
+   "label": "capture, exactly-once",
+   "variant": "emphasis"
+  },
+  {
+   "id": "commit-f",
+   "from": "agent",
+   "to": "flights",
+   "y": 678,
+   "label": "commit legs",
+   "variant": "emphasis"
+  },
+  {
+   "id": "confirm-f",
+   "from": "flights",
+   "to": "agent",
+   "y": 710,
+   "label": "confirmed",
+   "variant": "return"
+  },
+  {
+   "id": "chain",
+   "from": "agent",
+   "to": "audit",
+   "y": 742,
+   "label": "append transitions",
+   "variant": "dashed"
+  }
+ ],
+ "activations": [
+  {
+   "participant": "agent",
+   "from": 180,
+   "to": 750,
+   "type": "backend"
+  },
+  {
+   "participant": "flights",
+   "from": 222,
+   "to": 270,
+   "type": "cloud"
+  },
+  {
+   "participant": "flights",
+   "from": 342,
+   "to": 388,
+   "type": "cloud"
+  },
+  {
+   "participant": "hotels",
+   "from": 412,
+   "to": 448,
+   "type": "cloud"
+  },
+  {
+   "participant": "policy",
+   "from": 526,
+   "to": 572,
+   "type": "security"
+  },
+  {
+   "participant": "payments",
+   "from": 630,
+   "to": 668,
+   "type": "database"
+  },
+  {
+   "participant": "flights",
+   "from": 672,
+   "to": 716,
+   "type": "cloud"
+  },
+  {
+   "participant": "audit",
+   "from": 736,
+   "to": 768,
+   "type": "messagebus"
+  }
+ ],
+ "cards": [
+  {
+   "dot": "emerald",
+   "title": "Reversible First",
+   "items": [
+    "Search and quote bind nothing",
+    "Holds carry expiries and compensate automatically",
+    "No commit exists without a hold to commit"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "The Consent Gate",
+   "items": [
+    "The token is validated five ways and spent on use",
+    "A replayed commit refuses",
+    "Margin is checked deterministically before capture"
+   ]
+  },
+  {
+   "dot": "orange",
+   "title": "If Anything Fails",
+   "items": [
+    "Compensation runs strictly in reverse order",
+    "Capture failure unwinds confirmed legs",
+    "The audit chain verifies after every run"
+   ]
+  }
+ ]
+}

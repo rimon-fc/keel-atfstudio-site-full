@@ -1,0 +1,51 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "The Compile: Manifest to Governed Agent",
+    "output": "diagrams/compile-pipeline.html",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "happy-path", "label": "Brief to bundle", "focus": ["brief", "manifest", "validate", "autobuild", "scan", "evals", "bundle"], "note": "Follow a plain-language brief through the compile to a publishable bundle." },
+      { "id": "gates", "label": "The refusing gates", "focus": ["validate", "scan", "evals", "refuse"], "note": "Any failing gate refuses the whole build with a structured envelope naming the gate." }
+    ]
+  },
+  "lanes": [
+    { "id": "author", "label": "Author Surface" },
+    { "id": "compiler", "label": "keel Compile" },
+    { "id": "gates", "label": "Gates", "variant": "exception" },
+    { "id": "artefact", "label": "Artefact" }
+  ],
+  "phases": [
+    { "id": "authoring", "label": "Author", "fromCol": 0, "toCol": 1 },
+    { "id": "compiling", "label": "Compile", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "gating", "label": "Gate + ship", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["brief", "manifest", "validate", "autobuild", "scan", "evals", "bundle"],
+  "nodes": [
+    { "id": "brief", "lane": "author", "col": 0, "type": "external", "label": "Plain-language Brief", "sublabel": "keel-builder skill", "width": 138 },
+    { "id": "manifest", "lane": "author", "col": 1, "type": "frontend", "label": "agent.yaml", "sublabel": "schema-typed manifest", "tag": "never hand-wired", "width": 138 },
+    { "id": "validate", "lane": "compiler", "col": 2, "type": "backend", "label": "Validate", "sublabel": "schema + references", "width": 138 },
+    { "id": "autobuild", "lane": "compiler", "col": 3, "type": "backend", "label": "Autobuild", "sublabel": "specs to typed tools", "tag": "auth never guessed", "width": 138 },
+    { "id": "scan", "lane": "gates", "col": 4, "type": "security", "label": "Trust Scan", "sublabel": "eight controls, honest cap", "width": 138 },
+    { "id": "evals", "lane": "gates", "col": 5, "type": "security", "label": "Eval Harness", "sublabel": "deterministic, offline", "width": 138 },
+    { "id": "refuse", "lane": "gates", "col": 2, "type": "security", "label": "Refuse", "sublabel": "named gate, structured envelope", "width": 138 },
+    { "id": "bundle", "lane": "artefact", "col": 5, "type": "database", "label": ".mcpb Bundle", "sublabel": "publish, SHA256 verified", "width": 138 }
+  ],
+  "edges": [
+    { "id": "generate", "from": "brief", "to": "manifest", "label": "generate", "variant": "emphasis" },
+    { "id": "compile", "from": "manifest", "to": "validate", "variant": "default" },
+    { "id": "build-tools", "from": "validate", "to": "autobuild", "variant": "default" },
+    { "id": "gate-scan", "from": "autobuild", "to": "scan", "label": "every load", "variant": "security" },
+    { "id": "gate-evals", "from": "scan", "to": "evals", "variant": "default" },
+    { "id": "ship", "from": "evals", "to": "bundle", "label": "gates green", "variant": "emphasis" },
+    { "id": "invalid", "from": "validate", "to": "refuse", "label": "invalid", "variant": "security", "role": "error" },
+    { "id": "untrusted", "from": "scan", "to": "refuse", "label": "below floor", "variant": "security", "role": "error" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Declarative Infrastructure", "items": ["The manifest is the whole input", "The compile is the function k from manifests to agents"] },
+    { "dot": "rose", "title": "Refusal Semantics", "items": ["Validation, trust and evaluation gates all refuse loudly", "A refused build names its gate; nothing ships partially"] }
+  ]
+}

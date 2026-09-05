@@ -1,0 +1,319 @@
+{
+ "schema_version": 1,
+ "diagram_type": "architecture",
+ "meta": {
+  "title": "The ATF Platform Stack",
+  "output": "diagrams/atf-platform-stack.html",
+  "quality_profile": "showcase",
+  "animation": "trace",
+  "views": [
+   {
+    "id": "traveller-path",
+    "label": "Traveller path",
+    "focus": [
+     "traveller",
+     "host",
+     "studio",
+     "keel",
+     "suppliers"
+    ],
+    "note": "Follow a consultation from the AI client host down to supplier rails."
+   },
+   {
+    "id": "governance",
+    "label": "Governance boundary",
+    "focus": [
+     "gov",
+     "keel",
+     "audit"
+    ],
+    "note": "Every tool call is mediated below the manifest line and appended to the audit chain."
+   },
+   {
+    "id": "money-and-supply",
+    "label": "Payments and distribution",
+    "focus": [
+     "keel",
+     "payments",
+     "registry",
+     "sandbox"
+    ],
+    "note": "Capture is exactly-once; bundles install with verified integrity; compute is secretless."
+   }
+  ]
+ },
+ "components": [
+  {
+   "id": "traveller",
+   "type": "external",
+   "label": "Traveller",
+   "sublabel": "consultant, any surface",
+   "pos": [
+    40,
+    300
+   ],
+   "size": [
+    132,
+    60
+   ]
+  },
+  {
+   "id": "host",
+   "type": "frontend",
+   "label": "AI Client Host",
+   "sublabel": "MCP host + widgets",
+   "pos": [
+    250,
+    300
+   ],
+   "size": [
+    132,
+    60
+   ]
+  },
+  {
+   "id": "studio",
+   "type": "backend",
+   "label": "ATFStudio",
+   "sublabel": "control plane, sessions",
+   "pos": [
+    460,
+    300
+   ],
+   "size": [
+    132,
+    60
+   ]
+  },
+  {
+   "id": "sandbox",
+   "type": "security",
+   "label": "Sandbox + Proxy",
+   "sublabel": "secretless egress",
+   "pos": [
+    460,
+    452
+   ],
+   "size": [
+    132,
+    60
+   ],
+   "tag": "no live secret"
+  },
+  {
+   "id": "keel",
+   "type": "backend",
+   "label": "keel Agent",
+   "sublabel": "gateway, flows, entities",
+   "pos": [
+    676,
+    300
+   ],
+   "size": [
+    132,
+    60
+   ]
+  },
+  {
+   "id": "gov",
+   "type": "security",
+   "label": "Governance Chain",
+   "sublabel": "interceptors + policy",
+   "pos": [
+    676,
+    148
+   ],
+   "size": [
+    132,
+    60
+   ],
+   "tag": "complete mediation"
+  },
+  {
+   "id": "audit",
+   "type": "database",
+   "label": "Audit Chain",
+   "sublabel": "hash-linked, append-only",
+   "pos": [
+    892,
+    148
+   ],
+   "size": [
+    132,
+    60
+   ]
+  },
+  {
+   "id": "suppliers",
+   "type": "cloud",
+   "label": "Suppliers (ATP)",
+   "sublabel": "flights, hotels, activities",
+   "pos": [
+    892,
+    300
+   ],
+   "size": [
+    132,
+    60
+   ]
+  },
+  {
+   "id": "payments",
+   "type": "messagebus",
+   "label": "Payment Rails",
+   "sublabel": "consumer + supplier",
+   "pos": [
+    892,
+    452
+   ],
+   "size": [
+    132,
+    60
+   ],
+   "tag": "exactly-once capture"
+  },
+  {
+   "id": "registry",
+   "type": "database",
+   "label": "Registry",
+   "sublabel": ".mcpb, SHA256 verified",
+   "pos": [
+    250,
+    452
+   ],
+   "size": [
+    132,
+    60
+   ]
+  }
+ ],
+ "boundaries": [
+  {
+   "kind": "region",
+   "label": "FCTG Global Leisure deployment: Databricks reference, AWS and GCP by design",
+   "wraps": [
+    "studio",
+    "sandbox",
+    "keel",
+    "gov",
+    "audit",
+    "registry"
+   ]
+  },
+  {
+   "kind": "security-group",
+   "label": "Governed below the manifest line",
+   "wraps": [
+    "keel",
+    "gov",
+    "audit"
+   ]
+  }
+ ],
+ "connections": [
+  {
+   "id": "chat",
+   "from": "traveller",
+   "to": "host",
+   "label": "chat",
+   "variant": "emphasis"
+  },
+  {
+   "id": "sessions",
+   "from": "host",
+   "to": "studio",
+   "label": "sessions",
+   "variant": "emphasis"
+  },
+  {
+   "id": "mcp",
+   "from": "studio",
+   "to": "keel",
+   "label": "MCP",
+   "variant": "emphasis"
+  },
+  {
+   "id": "atp-ops",
+   "from": "keel",
+   "to": "suppliers",
+   "label": "ATP ops",
+   "variant": "emphasis"
+  },
+  {
+   "id": "mediate",
+   "from": "gov",
+   "to": "keel",
+   "label": "every call",
+   "variant": "security",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "append",
+   "from": "gov",
+   "to": "audit",
+   "label": "append",
+   "variant": "dashed"
+  },
+  {
+   "id": "capture",
+   "from": "suppliers",
+   "to": "payments",
+   "label": "settle",
+   "variant": "security",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "provision",
+   "from": "studio",
+   "to": "sandbox",
+   "label": "provision",
+   "variant": "dashed",
+   "fromSide": "bottom",
+   "toSide": "top",
+   "labelDy": 24
+  },
+  {
+   "id": "install",
+   "from": "registry",
+   "to": "keel",
+   "label": "install",
+   "variant": "dashed",
+   "fromSide": "bottom",
+   "toSide": "bottom",
+   "labelDy": 54
+  }
+ ],
+ "cards": [
+  {
+   "dot": "cyan",
+   "title": "Two Acts",
+   "items": [
+    "keel builds and governs the agent",
+    "ATFStudio runs the business on sessions",
+    "The host renders widgets where users already are"
+   ]
+  },
+  {
+   "dot": "rose",
+   "title": "Governance",
+   "items": [
+    "Interceptors and policy mediate every tool call",
+    "Verdicts and transitions append to the hash chain",
+    "Nothing model-generated reaches below the manifest line"
+   ]
+  },
+  {
+   "dot": "emerald",
+   "title": "Commerce",
+   "items": [
+    "ATP carries hold-commit bookings to suppliers",
+    "Capture is exactly-once with margin as a policy fact",
+    "Bundles distribute through an integrity-verified registry"
+   ]
+  }
+ ]
+}
